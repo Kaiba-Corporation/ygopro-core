@@ -4787,6 +4787,26 @@ int32 field::adjust_step(uint16 step) {
 			winp = PLAYER_NONE;
 			rea = 2;
 		}
+		
+		for (auto& pcard : player[0].list_mzone) {
+			if (!pcard) continue;
+			if (pcard->get_code() == CARD_DIVINE_SERPENT) {
+				if (winp == 1 || winp == PLAYER_NONE)
+				{
+					winp = 5;
+				}
+			}
+		}
+		for (auto& pcard : player[1].list_mzone) {
+			if (!pcard) continue;
+			if (pcard->get_code() == CARD_DIVINE_SERPENT) {
+				if (winp == 0 || winp == PLAYER_NONE)
+				{
+					winp = 5;
+				}
+			}
+		}
+		
 		if(winp != 5) {
 			pduel->write_buffer8(MSG_WIN);
 			pduel->write_buffer8(winp);

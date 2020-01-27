@@ -382,5 +382,6 @@ public:
 
 //Anime Cards
 #define CARD_THE_WINGED_DRAGON_OF_RA	700000002
+#define CARD_DIVINE_SERPENT	            700000119
 
 #endif /* CARD_H_ */

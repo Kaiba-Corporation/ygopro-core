@@ -1172,6 +1172,14 @@ int32 scriptlib::duel_win(lua_State *L) {
 		return 0;
 	duel* pduel = interpreter::get_duel_info(L);
 	if(pduel->game_field->core.win_player == 5) {
+		
+		for (auto& pcard : pduel->game_field->player[1 - playerid].list_mzone) {
+			if (!pcard) continue;
+			if ((pcard->get_code() == CARD_DIVINE_SERPENT)) {
+				return 0;
+			}
+		}
+		
 		pduel->game_field->core.win_player = playerid;
 		pduel->game_field->core.win_reason = reason;
 	}
