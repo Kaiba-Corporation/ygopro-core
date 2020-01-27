@@ -380,4 +380,7 @@ public:
 #define CARD_MARINE_DOLPHIN	78734254
 #define CARD_TWINKLE_MOSS	13857930
 
+//Anime Cards
+#define CARD_THE_WINGED_DRAGON_OF_RA	700000002
+
 #endif /* CARD_H_ */

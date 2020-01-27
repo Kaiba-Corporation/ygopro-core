@@ -1945,13 +1945,16 @@ void card::refresh_disable_status() {
 	// disabled
 	int32 pre_dis = is_status(STATUS_DISABLED);
 	filter_immune_effect();
-	if (!is_affected_by_effect(EFFECT_CANNOT_DISABLE) && is_affected_by_effect(EFFECT_DISABLE))
-		set_status(STATUS_DISABLED, TRUE);
-	else
+	if (!is_affected_by_effect(EFFECT_CANNOT_DISABLE) && is_affected_by_effect(EFFECT_DISABLE)) {
+		if (get_code() != CARD_THE_WINGED_DRAGON_OF_RA) {
+			set_status(STATUS_DISABLED, TRUE);
+		}
+	} else {
 		set_status(STATUS_DISABLED, FALSE);
-	int32 cur_dis = is_status(STATUS_DISABLED);
-	if(pre_dis != cur_dis)
-		filter_immune_effect();
+		int32 cur_dis = is_status(STATUS_DISABLED);
+		if (pre_dis != cur_dis)
+			filter_immune_effect();
+	}
 }
 std::tuple<uint8, effect*> card::refresh_control_status() {
 	uint8 final = owner;
