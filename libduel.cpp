@@ -767,10 +767,19 @@ int32 scriptlib::duel_move_to_field(lua_State *L) {
 	uint32 zone = 0xff;
 	if(lua_gettop(L) > 6)
 		zone = (uint32)lua_tointeger(L, 7);
+	if(destination == LOCATION_FZONE) {
+		destination = LOCATION_SZONE;
+		zone = 0x1 << 5;
+	}
+	uint32 pzone = FALSE;
+	if(destination == LOCATION_PZONE) {
+		destination = LOCATION_SZONE;
+		pzone = TRUE;
+	}
 	duel* pduel = pcard->pduel;
 	pcard->enable_field_effect(false);
 	pduel->game_field->adjust_instant();
-	pduel->game_field->move_to_field(pcard, move_player, playerid, destination, positions, enable, 0, FALSE, zone);
+	pduel->game_field->move_to_field(pcard, move_player, playerid, destination, positions, enable, 0, pzone, zone);
 	return lua_yieldk(L, 0, (lua_KContext)pduel, [](lua_State *L, int32 status, lua_KContext ctx) {
 		duel* pduel = (duel*)ctx;
 		lua_pushboolean(L, pduel->game_field->returns.ivalue[0]);
@@ -794,7 +803,7 @@ int32 scriptlib::duel_return_to_field(lua_State *L) {
 	pcard->enable_field_effect(false);
 	pduel->game_field->adjust_instant();
 	pduel->game_field->refresh_location_info_instant();
-	pduel->game_field->move_to_field(pcard, pcard->previous.controler, pcard->previous.controler, pcard->previous.location, pos, TRUE, 1, 0, zone);
+	pduel->game_field->move_to_field(pcard, pcard->previous.controler, pcard->previous.controler, pcard->previous.location, pos, TRUE, 1, pcard->previous.pzone, zone);
 	return lua_yieldk(L, 0, (lua_KContext)pduel, [](lua_State *L, int32 status, lua_KContext ctx) {
 		duel* pduel = (duel*)ctx;
 		lua_pushboolean(L, pduel->game_field->returns.ivalue[0]);
@@ -3633,6 +3642,34 @@ int32 scriptlib::duel_announce_card(lua_State * L) {
 		for(int32 i = 2; i <= lua_gettop(L); ++i)
 			pduel->game_field->core.select_options.push_back((uint32)lua_tointeger(L, i));
 	}
+	int32 stack_size = 0;
+	for(auto& it : pduel->game_field->core.select_options) {
+		switch(it) {
+		case OPCODE_ADD:
+		case OPCODE_SUB:
+		case OPCODE_MUL:
+		case OPCODE_DIV:
+		case OPCODE_AND:
+		case OPCODE_OR:
+			stack_size -= 1;
+			break;
+		case OPCODE_NEG:
+		case OPCODE_NOT:
+		case OPCODE_ISCODE:
+		case OPCODE_ISSETCARD:
+		case OPCODE_ISTYPE:
+		case OPCODE_ISRACE:
+		case OPCODE_ISATTRIBUTE:
+			break;
+		default:
+			stack_size += 1;
+			break;
+		}
+		if(stack_size <= 0)
+			break;
+	}
+	if(stack_size != 1)
+		return luaL_error(L, "Parameters are invalid.");
 	pduel->game_field->add_process(PROCESSOR_ANNOUNCE_CARD, 0, 0, 0, playerid, 0);
 	return lua_yieldk(L, 0, (lua_KContext)pduel, [](lua_State *L, int32 status, lua_KContext ctx) {
 		duel* pduel = (duel*)ctx;
