@@ -1036,8 +1036,7 @@ int32 field::process_phase_event(int16 step, int32 phase) {
 			cn_count++;
 		}
 		//all effects taking control non-permanently are only until End Phase, not until Turn end
-		for(auto eit = effects.pheff.begin(); eit != effects.pheff.end();) {
-			effect* peffect = *eit++;
+		for(auto* peffect : effects.pheff) {
 			if(peffect->code != EFFECT_SET_CONTROL)
 				continue;
 			if(!(peffect->reset_flag & phase))
@@ -1051,13 +1050,8 @@ int32 field::process_phase_event(int16 step, int32 phase) {
 			if(peffect->reset_count != 1)
 				continue;
 			card* phandler = peffect->get_handler();
-			if(pid != phandler->current.controler) {
-				if(peffect->is_flag(EFFECT_FLAG_FIELD_ONLY))
-					remove_effect(peffect);
-				else
-					peffect->handler->remove_effect(peffect);
+			if(peffect->get_value(phandler) != phandler->current.controler)
 				continue;
-			}
 			newchain.triggering_effect = peffect;
 			core.select_chains.push_back(newchain);
 			cn_count++;
@@ -1316,7 +1310,7 @@ int32 field::process_point_event(int16 step, int32 skip_trigger, int32 skip_free
 			if(phandler->is_has_relation(*clit)) //work around: position and control should be refreshed before raising event
 				clit->set_triggering_state(phandler);
 			uint8 tp = clit->triggering_player;
-			if(phandler->is_has_relation(*clit) && peffect->is_chainable(tp) && peffect->is_activateable(tp, clit->evt, TRUE)) {
+			if(check_trigger_effect(*clit) && peffect->is_chainable(tp) && peffect->is_activateable(tp, clit->evt, TRUE)) {
 				if(tp == core.current_player)
 					core.select_chains.push_back(*clit);
 			} else {
@@ -1373,7 +1367,7 @@ int32 field::process_point_event(int16 step, int32 skip_trigger, int32 skip_free
 				clit->set_triggering_state(phandler);
 			}
 			uint8 tp = clit->triggering_player;
-			if(check_hand_trigger(*clit) && phandler->is_has_relation(*clit)
+			if(check_hand_trigger(*clit) && check_trigger_effect(*clit)
 				&& peffect->is_chainable(tp) && peffect->is_activateable(tp, clit->evt, TRUE)
 				&& check_spself_from_hand_trigger(*clit)) {
 				if(tp == core.current_player)
