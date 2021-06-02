@@ -240,7 +240,7 @@ inline effect_flag operator|(effect_flag flag1, effect_flag flag2)
 #define EFFECT_EXTRA_SET_COUNT			35	//
 #define EFFECT_SET_PROC					36	//
 #define EFFECT_LIMIT_SET_PROC			37	//
-#define EFFECT_DEVINE_LIGHT				38	//
+#define EFFECT_DIVINE_LIGHT				38	//
 #define EFFECT_CANNOT_DISABLE_FLIP_SUMMON	39	//
 #define EFFECT_INDESTRUCTABLE			40	//
 #define EFFECT_INDESTRUCTABLE_EFFECT	41	//
@@ -454,6 +454,8 @@ inline effect_flag operator|(effect_flag flag1, effect_flag flag2)
 #define EFFECT_SET_BATTLE_ATTACK		362
 #define EFFECT_SET_BATTLE_DEFENSE		363
 #define EFFECT_OVERLAY_RITUAL_MATERIAL	364
+#define EFFECT_CHANGE_GRAVE_ATTRIBUTE	365
+#define EFFECT_CHANGE_GRAVE_RACE		366
 
 #define EVENT_STARTUP		1000
 #define EVENT_FLIP			1001
